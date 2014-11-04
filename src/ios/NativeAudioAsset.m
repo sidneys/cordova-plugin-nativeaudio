@@ -1,5 +1,5 @@
 //
-// 
+//
 //  NativeAudioAsset.m
 //  NativeAudioAsset
 //
@@ -14,18 +14,21 @@
 {
     self = [super init];
     if(self) {
-        voices = [[NSMutableArray alloc] init];  
-        
+        isPaused = NO;
+        voices = [[NSMutableArray alloc] init];
+        pausedStates = [[NSMutableArray alloc] init];
+
         NSURL *pathURL = [NSURL fileURLWithPath : path];
-        
+
         for (int x = 0; x < [numVoices intValue]; x++) {
             AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:pathURL error: NULL];
             player.volume = volume.floatValue;
             [player prepareToPlay];
             [voices addObject:player];
+            [pausedStates addObject:[NSNumber numberWithBool:NO]];
             [player setDelegate:self];
         }
-        
+
         playIndex = 0;
     }
     return(self);
@@ -33,6 +36,19 @@
 
 - (void) play
 {
+    if (isPaused) {
+        for (int x = 0; x < [voices count]; x++) {
+            if ([[pausedStates objectAtIndex:x] boolValue]) {
+                AVAudioPlayer * player = [voices objectAtIndex:x];
+                [player play];
+                [pausedStates replaceObjectAtIndex:x withObject:[NSNumber numberWithBool:NO]];
+            }
+        }
+
+        isPaused = NO;
+        return;
+    }
+
     AVAudioPlayer * player = [voices objectAtIndex:playIndex];
     [player setCurrentTime:0.0];
     player.numberOfLoops = 0;
@@ -41,12 +57,26 @@
     playIndex = playIndex % [voices count];
 }
 
+- (void) pause
+{
+    for (int x = 0; x < [voices count]; x++) {
+        AVAudioPlayer * player = [voices objectAtIndex:x];
+        if (player.isPlaying) {
+            [player pause];
+            [pausedStates replaceObjectAtIndex:x withObject:[NSNumber numberWithBool:YES]];
+        }
+    }
+    isPaused = YES;
+}
+
 - (void) stop
 {
     for (int x = 0; x < [voices count]; x++) {
         AVAudioPlayer * player = [voices objectAtIndex:x];
         [player stop];
+        [pausedStates replaceObjectAtIndex:x withObject:[NSNumber numberWithBool:NO]];
     }
+    isPaused = NO;
 }
 
 - (void) loop
@@ -60,7 +90,7 @@
     playIndex = playIndex % [voices count];
 }
 
-- (void) unload 
+- (void) unload
 {
     [self stop];
     for (int x = 0; x < [voices count]; x++) {

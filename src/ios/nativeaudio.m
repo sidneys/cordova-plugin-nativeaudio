@@ -21,6 +21,7 @@ NSString* ERROR_VOLUME_FORMAT = @"(NATIVE AUDIO) Volume is declared as float bet
 NSString* INFO_ASSET_LOADED = @"(NATIVE AUDIO) Asset loaded.";
 NSString* INFO_ASSET_UNLOADED = @"(NATIVE AUDIO) Asset unloaded.";
 NSString* INFO_PLAYBACK_PLAY = @"(NATIVE AUDIO) Play";
+NSString* INFO_PLAYBACK_PAUSE = @"(NATIVE AUDIO) Pause";
 NSString* INFO_PLAYBACK_STOP = @"(NATIVE AUDIO) Stop";
 NSString* INFO_PLAYBACK_LOOP = @"(NATIVE AUDIO) Loop.";
 NSString* INFO_VOLUME_CHANGED = @"(NATIVE AUDIO) Volume changed.";
@@ -200,6 +201,42 @@ NSString* INFO_VOLUME_CHANGED = @"(NATIVE AUDIO) Volume changed.";
             [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: RESULT] callbackId:callbackId];
         }
     }];
+}
+
+- (void) pause:(CDVInvokedUrlCommand *)command
+{
+    NSString *callbackId = command.callbackId;
+    NSArray* arguments = command.arguments;
+    NSString *audioID = [arguments objectAtIndex:0];
+
+    if ( audioMapping ) {
+        NSObject* asset = audioMapping[audioID];
+
+        if (asset != nil){
+
+            if ([asset isKindOfClass:[NativeAudioAsset class]]) {
+                NativeAudioAsset *_asset = (NativeAudioAsset*) asset;
+                // Music assets are faded out
+                [_asset pause];
+
+                NSString *RESULT = [NSString stringWithFormat:@"%@ (%@)", INFO_PLAYBACK_PAUSE, audioID];
+                [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: RESULT] callbackId:callbackId];
+
+            } else if ( [asset isKindOfClass:[NSNumber class]] ) {
+
+                NSString *RESULT = [NSString stringWithFormat:@"%@ (%@)", ERROR_TYPE_RESTRICTED, audioID];
+                [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: RESULT] callbackId:callbackId];
+
+            }
+
+        } else {
+
+            NSString *RESULT = [NSString stringWithFormat:@"%@ (%@)", ERROR_REFERENCE_MISSING, audioID];
+            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: RESULT] callbackId:callbackId];
+        }
+    } else {
+        NSString *RESULT = [NSString stringWithFormat:@"%@ (%@)", ERROR_REFERENCE_MISSING, audioID];
+        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString: RESULT] callbackId:callbackId];    }
 }
 
 - (void) stop:(CDVInvokedUrlCommand *)command
