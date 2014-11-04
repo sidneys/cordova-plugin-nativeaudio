@@ -13,6 +13,8 @@ typedef void (^CompleteCallback)(NSString*);
 
 @interface NativeAudioAsset : NSObject<AVAudioPlayerDelegate> {
     NSMutableArray* voices;
+    NSMutableArray* pausedStates;
+    BOOL isPaused;
     int playIndex;
     NSString* audioId;
     CompleteCallback finished;
@@ -20,6 +22,7 @@ typedef void (^CompleteCallback)(NSString*);
 
 -(id) initWithPath:(NSString*) path withVoices:(NSNumber*) numVoices withVolume:(NSNumber*) volume;
 - (void) play;
+- (void) pause;
 - (void) stop;
 - (void) loop;
 - (void) unload;

@@ -110,8 +110,8 @@ Uses higher-level native APIs with a larger footprint. (iOS: AVAudioPlayer).
 
 The default **volume** is 1.0, a lower default can be set by using a numerical value from 0.1 to 1.0.
 
-By default, there is 1 **vice**, that is: one instance that will be stopped & restarted on play().
-If there are multiple voices (number greater than 0), it will cycle through voices to play overlapping audio.
+By default, there is 1 **voice**, that is: one instance that will be stopped & restarted on play().
+If there are multiple voices (number greater than 1), it will cycle through voices to play overlapping audio.
 
 ###Playback
 
@@ -127,7 +127,7 @@ If there are multiple voices (number greater than 0), it will cycle through voic
 play: function (id, successCallback, errorCallback, completeCallback)
 ```
 
-Plays an audio asset.
+Plays an audio asset. Will resume all paused voices without fade.
 
 * params:
  * id - string unique ID for the audio file
@@ -141,6 +141,17 @@ loop: function (id, successCallback, errorCallback)
 Loops an audio asset infinitely - this only works for assets loaded via preloadComplex.
 
 * params
+ * ID - string unique ID for the audio file
+ * successCallback - success callback function
+ * errorCallback - error callback function
+
+```javascript
+pause: function (id, successCallback, errorCallback)
+```
+
+Pauses all voices. Only works for assets loaded via preloadComplex. Will not fade.
+
+* params:
  * ID - string unique ID for the audio file
  * successCallback - success callback function
  * errorCallback - error callback function
