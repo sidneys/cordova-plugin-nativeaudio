@@ -131,7 +131,7 @@ NSString* INFO_VOLUME_CHANGED = @"(NATIVE AUDIO) Volume changed.";
     }
     
     NSNumber *delay = nil;
-    if ( [arguments count] > 4 && [arguments objectAtIndex:4] != [NSNull null])
+    if ( [arguments count] > 4 )
     {
         // The delay is determines how fast the asset is
         // faded in and out
