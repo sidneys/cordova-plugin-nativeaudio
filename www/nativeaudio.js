@@ -24,21 +24,26 @@ var exec = require('cordova/exec');
 module.exports  = {
 
     preloadSimple: function(id, assetPath, successCallback, errorCallback) {
-
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadSimple", [id, assetPath]);
     },
     
-    preloadComplex: function(id, assetPath, volume, voices, delay, successCallback, errorCallback) {
-
-        return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadComplex", [id, assetPath, parseFloat(volume), voices, parseFloat(delay)]);
+    preloadComplex: function(id, assetPath, volume, voices, successCallback, errorCallback) {
+        // Set voices and volume to defaults if not supplied
+        if (voices === undefined) voices = 1;
+        if (volume === undefined) volume = 1.0;
+        
+        return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadComplex", [id, assetPath, parseFloat(volume), voices]);
     },
 
     play: function(id, successCallback, errorCallback, completeCallback) {
-        if(typeof completeCallback === "function") {
-        	cordova.exec(completeCallback, errorCallback, "NativeAudio", "addCompleteListener", [id]);    
+        if (typeof completeCallback === "function") {
+            cordova.exec(completeCallback, errorCallback, "NativeAudio", "addCompleteListener", [id]);
         }
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "play", [id]);
-        
+    },
+
+    pause: function(id, successCallback, errorCallback) {
+        return cordova.exec(successCallback, errorCallback, "NativeAudio", "pause", [id]);
     },
 
     stop: function(id, successCallback, errorCallback) {
