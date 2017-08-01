@@ -202,9 +202,7 @@ public class NativeAudio extends CordovaPlugin implements AudioManager.OnAudioFo
 		AudioManager am = (AudioManager)cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
 
 	        int result = am.requestAudioFocus(this,
-	                // Use the music stream.
 	                AudioManager.STREAM_NOTIFICATION,
-	                // Request permanent focus.
 	                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
 
 		// Allow android to receive the volume events
