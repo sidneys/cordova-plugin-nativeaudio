@@ -145,7 +145,11 @@ public class NativeAudio extends CordovaPlugin implements AudioManager.OnAudioFo
 
 			if (assetMap.containsKey(audioID)) {
 				NativeAudioAsset asset = assetMap.get(audioID);
-				asset.stop();
+                // Release focus on the stop
+                AudioManager am = (AudioManager)cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+                am.abandonAudioFocus(this);
+
+                asset.stop();
 			} else {
 				return new PluginResult(Status.ERROR, ERROR_NO_AUDIOID);
 			}
