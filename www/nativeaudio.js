@@ -23,26 +23,23 @@ var exec = require('cordova/exec');
 
 module.exports  = {
     setOptions: function(options, successCallback, errorCallback) {
-
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "setOptions", [options]);
     },
 
     preloadSimple: function(id, assetPath, successCallback, errorCallback) {
-
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadSimple", [id, assetPath]);
     },
     
-    preloadComplex: function(id, assetPath, volume, voices, delay, successCallback, errorCallback) {
-
-        return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadComplex", [id, assetPath, parseFloat(volume), voices, parseFloat(delay)]);
+    preloadComplex: function(id, assetPath, volume, voices, delay, streamType, successCallback, errorCallback) {
+        if (!streamType) streamType = this.STREAM_MUSIC;
+        return cordova.exec(successCallback, errorCallback, "NativeAudio", "preloadComplex", [id, assetPath, parseFloat(volume), voices, parseFloat(delay), streamType]);
     },
 
     play: function(id, successCallback, errorCallback, completeCallback) {
         if(typeof completeCallback === "function") {
-        	cordova.exec(completeCallback, errorCallback, "NativeAudio", "addCompleteListener", [id]);    
+            cordova.exec(completeCallback, errorCallback, "NativeAudio", "addCompleteListener", [id]);    
         }
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "play", [id]);
-        
     },
 
     stop: function(id, successCallback, errorCallback) {
@@ -59,5 +56,10 @@ module.exports  = {
 
     setVolumeForComplexAsset: function (id, volume, successCallback, errorCallback) {
         return cordova.exec(successCallback, errorCallback, "NativeAudio", "setVolumeForComplexAsset", [id, parseFloat(volume)]);
-    }
+    },
+
+    STREAM_SYSTEM: 1,
+    STREAM_RING: 2,
+    STREAM_MUSIC: 3,
+    STREAM_NOTIFICATION: 5
 };
